@@ -1,0 +1,11 @@
+id = "curry"
+name = "Curry"
+version = "0.0.1"
+schema_version = 1
+authors = ["fwcd"]
+description = "Curry language support for Zed"
+repository = "https://github.com/fwcd/zed-curry"
+
+[grammars.curry]
+repository = "https://github.com/matthesjh/tree-sitter-curry"
+commit = "dafe2a31ab091805bc5ba014670985fd36acfc63"
