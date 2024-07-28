@@ -8,4 +8,4 @@ repository = "https://github.com/fwcd/zed-curry"
 
 [grammars.curry]
 repository = "https://github.com/matthesjh/tree-sitter-curry"
-commit = "dafe2a31ab091805bc5ba014670985fd36acfc63"
+commit = "fb8312da3aeba1ae6d6cc0f83fae7132b17e2889"
