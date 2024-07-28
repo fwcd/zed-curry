@@ -1,156 +1,164 @@
-;; Copyright 2022 nvim-treesitter
-;;
-;; Licensed under the Apache License, Version 2.0 (the "License");
-;; you may not use this file except in compliance with the License.
-;; You may obtain a copy of the License at
-;;
-;;     http://www.apache.org/licenses/LICENSE-2.0
-;;
-;; Unless required by applicable law or agreed to in writing, software
-;; distributed under the License is distributed on an "AS IS" BASIS,
-;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-;; See the License for the specific language governing permissions and
-;; limitations under the License.
+; Copyright (c) 2019-2024 Jan-Hendrik Matthes
+; 
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in all
+; copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+; SOFTWARE.
 
-;; ----------------------------------------------------------------------------
-;; Literals and comments
+; Keywords
+; --------
 
-(integer) @number
-(exp_negation) @number
-(exp_literal (float)) @float
-(char) @character
+"as" @keyword
+"case" @keyword
+"class" @keyword
+"data" @keyword
+"default" @keyword
+"deriving" @keyword
+"do" @keyword
+"else" @keyword
+"external" @keyword
+"fcase" @keyword
+"forall" @keyword
+"free" @keyword
+"hiding" @keyword
+"if" @keyword
+"import" @keyword
+"in" @keyword
+"infix" @keyword
+"infixl" @keyword
+"infixr" @keyword
+"instance" @keyword
+"let" @keyword
+"module" @keyword
+"newtype" @keyword
+"of" @keyword
+"qualified" @keyword
+"then" @keyword
+"type" @keyword
+"where" @keyword
+
+".." @keyword
+"::" @keyword
+"=" @keyword
+"\\" @keyword
+"|" @keyword
+"<-" @keyword
+"->" @keyword
+"@" @keyword
+"~" @keyword
+"=>" @keyword
+
+; Interfaces
+; ----------
+
+(module_identifier) @interface
+
+; Types
+; -----
+
+((type_identifier) @type.builtin
+  (#match? @type.builtin "^(Bool|Char|DET|Either|Float|Int|IO|IOError|Maybe|Ordering|ReadS|ShowS|String|Success)$"))
+(type_constructor "()") @type.builtin
+(type_constructor "[]") @type.builtin
+(type_constructor "(->)") @type.builtin
+(type_constructor (tuple_constructor)) @type.builtin
+
+(type_identifier) @type
+(type_variable_identifier) @type.variable
+(anonymous_type_variable) @type.variable
+
+; Classes
+; -------
+
+((class_identifier) @class.builtin
+  (#match? @class.builtin "^(Bounded|Enum|Eq|Fractional|Functor|Integral|Monad|Num|Ord|Real|Read|Show)$"))
+
+(class_identifier) @class
+
+; Constructors
+; ------------
+
+((data_constructor_identifier) @constructor.builtin
+  (#match? @constructor.builtin "^(EQ|FailError|False|GT|IOError|Just|Left|LT|NondetError|Nothing|Right|True|UserError)$"))
+(general_data_constructor "()") @constructor.builtin
+(general_data_constructor "[]") @constructor.builtin
+(general_data_constructor (tuple_constructor)) @constructor.builtin
+
+(data_constructor_identifier) @constructor
+
+; Functions
+; ---------
+
+((function_identifier) @function.builtin
+  (#match? @function.builtin "^(abs|all|and|any|anyOf|appendFile|apply|asTypeOf|boundedEnumFrom|boundedEnumFromThen|break|catch|chr|compare|concat|concatMap|cond|const|curry|div|divMod|done|doSolve|drop|dropWhile|either|elem|ensureNotFree|ensureSpine|enumFrom|enumFromThen|enumFromThenTo|enumFromThenTo_|enumFromThen_|enumFromTo|enumFromTo_|enumFrom_|error|fail|failed|filter|flip|fmap|foldIO|foldl|foldl1|foldM|foldr|foldr1|forIO|forIO_|forM|forM_|fromEnum|fromFloat|fromInt|fst|getChar|getLine|groundNormalForm|head|id|if_then_else|ioError|iterate|length|letrec|lex|liftIO|liftM|liftM2|lines|lookup|map|mapIO|mapIO_|mapM|mapM_|max|maxBound|maybe|min|minBound|mod|negate|negateFloat|negate_|normalForm|not|notElem|null|or|ord|otherwise|pred|print|putChar|putStr|putStrLn|quot|quotRem|read|readFile|readList|readParen|reads|readsPrec|recip|rem|repeat|replicate|return|reverse|seq|sequence|sequenceIO|sequenceIO_|sequence_|show|showChar|showError|showList|showParen|shows|showsPrec|showString|signum|snd|solve|span|splitAt|succ|success|tail|take|takeWhile|toEnum|uncurry|unknown|unless|unlessM|unlines|until|unwords|unzip|unzip3|userError|when|whenM|words|writeFile|zip|zip3|zipWith|zipWith3)$"))
+
+(function_identifier) @function
+
+; Properties
+; ----------
+
+(label_identifier) @property
+
+; Variables
+; ---------
+
+(variable_identifier) @variable
+(wildcard) @variable
+
+; Operators
+; ---------
+
+((infix_operator) @operator.builtin
+  (#match? @operator.builtin "^(:|!!|\$|\$!|\$!!|\$#|\$##|&|&&|&>|\\*|\\+|\\+\\+|-|/|\.|/=|<|<=|=:<=|=:<<=|=:=|==|>|>=|>>|>>=|\\?|\\|\\|)$"))
+"-" @operator.builtin
+
+(infix_operator) @operator
+
+; Numbers
+; -------
+
+(int) @number
+(float) @number
+
+; Strings
+; -------
+
+(char) @string
 (string) @string
 
-(con_unit) @symbol  ; unit, as in ()
+; Comments
+; --------
 
+(pragma) @comment
+(cpp_directive) @comment
 (comment) @comment
 
+; Punctuation
+; -----------
 
-;; ----------------------------------------------------------------------------
-;; Punctuation
+(all_constructors) @punctuation
 
-[
-  "("
-  ")"
-  "{"
-  "}"
-  "["
-  "]"
-] @punctuation.bracket
+"(" @punctuation.bracket
+")" @punctuation.bracket
+"{" @punctuation.bracket
+"}" @punctuation.bracket
+"[" @punctuation.bracket
+"]" @punctuation.bracket
+"`" @punctuation.bracket
 
-[
-  (comma)
-  ";"
-] @punctuation.delimiter
-
-
-;; ----------------------------------------------------------------------------
-;; Keywords, operators, includes
-
-[
-  "forall"
-  "∀"
-] @keyword
-
-(pragma) @constant
-
-[
-  "if"
-  "then"
-  "else"
-  "case"
-  "of"
-] @keyword
-
-(exp_lambda_cases "\\" ("cases" @variant))
-
-[
-  "import"
-  "qualified"
-  "module"
-] @keyword
-
-[
-  (operator)
-  (constructor_operator)
-  (type_operator)
-  (tycon_arrow)
-  (qualified_module)  ; grabs the `.` (dot), ex: import System.IO
-  (all_names)
-  (wildcard)
-  "="
-  "|"
-  "::"
-  "=>"
-  "->"
-  "<-"
-  "\\"
-  "`"
-  "@"
-] @operator
-
-(module) @title
-
-[
-  (where)
-  "let"
-  "in"
-  "class"
-  "instance"
-  "data"
-  "newtype"
-  "family"
-  "type"
-  "as"
-  "hiding"
-  "deriving"
-  "via"
-  "stock"
-  "anyclass"
-  "do"
-  "mdo"
-  "rec"
-  "infix"
-  "infixl"
-  "infixr"
-] @keyword
-
-
-;; ----------------------------------------------------------------------------
-;; Functions and variables
-
-(variable) @variable
-(pat_wildcard) @variable
-
-(signature name: (variable) @type)
-(function
-  name: (variable) @function
-  patterns: (patterns))
-((signature (fun)) . (function (variable) @function))
-((signature (context (fun))) . (function (variable) @function))
-((signature (forall (context (fun)))) . (function (variable) @function))
-
-(exp_infix (variable) @operator)  ; consider infix functions as operators
-
-(exp_infix (exp_name) @function (#set! "priority" 101))
-(exp_apply . (exp_name (variable) @function))
-(exp_apply . (exp_name (qualified_variable (variable) @function)))
-
-
-;; ----------------------------------------------------------------------------
-;; Types
-
-(type) @type
-(type_variable) @type
-
-(constructor) @constructor
-
-; True or False
-((constructor) @_bool (#match? @_bool "(True|False)")) @boolean
-
-
-;; ----------------------------------------------------------------------------
-;; Quasi-quotes
-
-(quoter) @function
-; Highlighting of quasiquote_body is handled by injections.scm
+(terminal) @punctuation.delimiter
+"," @punctuation.delimiter
+"." @punctuation.delimiter
