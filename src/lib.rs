@@ -1,4 +1,4 @@
-use std::{fs, process::Command};
+use std::fs;
 
 use zed_extension_api::{self as zed, serde_json, settings::LspSettings};
 
@@ -38,7 +38,13 @@ impl CurryExtension {
             _ => return Err(format!("The platform {os:?}/{arch:?} is not supported by curry-language-server")),
         };
 
-        let asset_name = format!("curry-language-server-{suffix}.zip");
+        let asset_name = format!(
+            "curry-language-server-{suffix}{extension}",
+            extension = match os {
+                zed::Os::Windows => ".zip",
+                zed::Os::Linux | zed::Os::Mac => ".tar.gz",
+            }
+        );
         let asset = release.assets
             .iter()
             .find(|asset| asset.name == asset_name)
@@ -62,18 +68,12 @@ impl CurryExtension {
             zed::download_file(
                 &asset.download_url,
                 &version_dir,
-                zed::DownloadedFileType::Zip
+                match os {
+                    zed::Os::Windows => zed::DownloadedFileType::Zip,
+                    _ => zed::DownloadedFileType::GzipTar
+                }
             )
             .map_err(|e| format!("Failed to download curry-language-server artifact: {e}"))?;
-
-            // Mark the binary as executable since this mode seems to be gone after unzipping
-            if matches!(os, zed::Os::Mac | zed::Os::Linux) {
-                Command::new("chmod")
-                    .arg("+x")
-                    .arg(&binary_path)
-                    .output()
-                    .map_err(|e| format!("Could not mark curry-language-server binary as executable: {e}"))?;
-            }
         }
 
         self.cached_binary_path = Some(binary_path.clone());
