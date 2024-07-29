@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs::{self, Permissions}, os::unix::fs::PermissionsExt};
 
 use zed_extension_api::{self as zed, serde_json, settings::LspSettings};
 
@@ -65,6 +65,12 @@ impl CurryExtension {
                 zed::DownloadedFileType::Zip
             )
             .map_err(|e| format!("Failed to download curry-language-server artifact: {e}"))?;
+
+            // Mark the binary as executable since this mode seems to be gone after unzipping
+            if matches!(os, zed::Os::Mac | zed::Os::Linux) {
+                fs::set_permissions(&binary_path, Permissions::from_mode(0o755))
+                    .map_err(|e| format!("Could not mark curry-language-server binary as executable: {e}"))?;
+            }
         }
 
         self.cached_binary_path = Some(binary_path.clone());
