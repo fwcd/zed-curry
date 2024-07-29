@@ -1,4 +1,4 @@
-use std::{fs::{self, Permissions}, os::unix::fs::PermissionsExt};
+use std::{fs, process::Command};
 
 use zed_extension_api::{self as zed, serde_json, settings::LspSettings};
 
@@ -68,7 +68,10 @@ impl CurryExtension {
 
             // Mark the binary as executable since this mode seems to be gone after unzipping
             if matches!(os, zed::Os::Mac | zed::Os::Linux) {
-                fs::set_permissions(&binary_path, Permissions::from_mode(0o755))
+                Command::new("chmod")
+                    .arg("+x")
+                    .arg(&binary_path)
+                    .output()
                     .map_err(|e| format!("Could not mark curry-language-server binary as executable: {e}"))?;
             }
         }
