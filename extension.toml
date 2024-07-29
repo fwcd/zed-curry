@@ -6,6 +6,10 @@ authors = ["fwcd"]
 description = "Curry language support for Zed"
 repository = "https://github.com/fwcd/zed-curry"
 
+[language_servers.curry-language-server]
+name = "Curry Language Server"
+language = "Curry"
+
 [grammars.curry]
 repository = "https://github.com/matthesjh/tree-sitter-curry"
 commit = "d2c895516233b66e1f8d938fb9335b031c582759"
