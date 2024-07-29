@@ -2,6 +2,9 @@
 name = "zed-curry"
 version = "0.0.4"
 edition = "2021"
+description = "Curry language support for Zed"
+repository = "https://github.com/fwcd/zed-curry"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]
